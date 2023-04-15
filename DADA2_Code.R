@@ -133,7 +133,6 @@ dim(seqtab.nochim)
 sum(seqtab.nochim)/sum(seqtab)
 
 
-
 ### Track reads through the pipeline
 # As a final check of our progress, we’ll look at the number of reads that made it through each step in the pipeline
 getN <- function(x) sum(getUniques(x))
@@ -143,6 +142,14 @@ rownames(track) <- sample.names
 
 head(track)
 write.table(track, "read-count-tracking.tsv", quote=FALSE, sep="\t", col.names=NA)
+
+# Save last file as output so we can re-open R and clear memory
+write.table(seqtab.nochim, "seqtab.nochim.tsv", quote=FALSE, sep="\t", col.names=NA)
+
+
+### CLOSE R DOWN. WHEN YOU REOPEN, RESUME HERE!!!
+
+seqtab.nochim <- as.matrix(read.delim("seqtab.nochim.tsv", sep = "\t", header = T, row.names=1, stringsAsFactors=FALSE))
 
 
 ### Assign taxonomy with latest Silva database, v.138.1
