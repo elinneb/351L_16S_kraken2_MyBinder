@@ -147,7 +147,8 @@ write.table(track, "read-count-tracking.tsv", quote=FALSE, sep="\t", col.names=N
 write.table(seqtab.nochim, "seqtab.nochim.tsv", quote=FALSE, sep="\t", col.names=NA)
 
 
-### CLOSE R DOWN. WHEN YOU REOPEN, RESUME HERE!!!
+### Go to JuptyerLab tab and right-click to download the seqtab.nochim file locally
+### CLOSE BINDER DOWN. Restart binder link. WHEN YOU REOPEN, RESUME HERE!!!
 
 seqtab.nochim <- as.matrix(read.delim("seqtab.nochim.tsv", sep = "\t", header = T, row.names=1, stringsAsFactors=FALSE))
 
