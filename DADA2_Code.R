@@ -143,6 +143,12 @@ rownames(track) <- sample.names
 head(track)
 write.table(track, "read-count-tracking.tsv", quote=FALSE, sep="\t", col.names=NA)
 
+
+######################################################
+#### WORKS UNTIL HERE, TROUBLESHOOTING NEXT STEPS ####
+######################################################
+
+
 # Save last file as output so we can re-open R and clear memory
 write.table(seqtab.nochim, "seqtab.nochim.tsv", quote=FALSE, sep="\t", col.names=NA)
 
@@ -154,6 +160,8 @@ write.table(seqtab.nochim, "seqtab.nochim.tsv", quote=FALSE, sep="\t", col.names
 
 seqtab.nochim <- as.matrix(read.delim("seqtab.nochim.tsv", sep = "\t", header = T, row.names=1, stringsAsFactors=FALSE))
 
+### Load dada2 program
+library(dada2); packageVersion("dada2")
 
 ### Assign taxonomy with latest Silva database, v.138.1
 # Compares ASVs to database of 16S sequences to classify taxa
