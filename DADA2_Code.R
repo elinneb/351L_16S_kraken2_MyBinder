@@ -52,9 +52,7 @@ names(filtFs) <- sample.names
 names(filtRs) <- sample.names
 
 # Filter and trim reads, note: 16S V4 region is ~254bp
-out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, trimLeft=c(19,20),
-                     maxN=0, truncQ=2, rm.phix=TRUE,
-                     compress=TRUE, multithread=TRUE) # On Windows set multithread=FALSE
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, trimLeft=c(19,20), rm.phix=TRUE)
 head(out)
 
 write.table(out, "Read_Filter_In_Out.txt", sep = "\t", quote=F)
@@ -73,27 +71,26 @@ dev.off()
 
 
 ### Generate an error model of our data
-# Learns the specific error-signature of our dataset
+# Learns the specific error-signature of our dataset for later steps
+# You don't have to worry about the specifics of how this works, it's to
+# inform the program on where the data are vulnerable to errors and how to
+# account for it.
 errF <- learnErrors(filtFs, multithread=TRUE)
 errR <- learnErrors(filtRs, multithread=TRUE)
 
-# Visualize the error rates
-png("Fwd_Error_Rate_Plots.png")
-plotErrors(errF, nominalQ=TRUE)
-dev.off()
-
-png("Rev_Error_Rate_Plots.png")
-plotErrors(errR, nominalQ=TRUE)
-dev.off()
 
 
 ### Dereplication 
-# Combines all identical sequencing reads into into “unique sequences” with a corresponding “abundance” equal to the number of reads with that unique sequence 
+# Combines all identical sequencing reads into into “unique sequences” 
+# with a corresponding “abundance” equal to the number of reads with that unique sequence 
 # I.e. if you have 100 identical sequences, it keeps 1 and attaches the number "100" to it
 # Dereplication substantially reduces computation time by eliminating redundant comparisons.
+# NOTE the number of unique sequences per total sequence reads in red below after code is run
 derepFs <- derepFastq(filtFs, verbose=TRUE)
 derepRs <- derepFastq(filtRs, verbose=TRUE)
+
 # Name the derep-class objects by the sample names
+# (attaches sample names to new files for the program's reference)
 names(derepFs) <- sample.names
 names(derepRs) <- sample.names
 
@@ -103,7 +100,7 @@ names(derepRs) <- sample.names
 # Incorporates the consensus quality profiles and abundances of each unique sequence
 # Then figures out if each sequence is of biological origin or spurious
 # Better to run on combined samples to resolve low-abundance sequences
-# But for computing reasons each group will run one pair - next week will start with full data
+# But for computing reasons each group will run one pair
 dadaFs <- dada(derepFs, err=errF, multithread=TRUE)
 dadaRs <- dada(derepRs, err=errR, multithread=TRUE)
 
@@ -113,10 +110,7 @@ dadaRs[[1]]
 
 
 ### Merge Paired Reads
-mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs, verbose=TRUE)
-
-# Inspect the merger data.frame from the first sample
-head(mergers[[1]])
+mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs, verbose=TRUE, justConcatenate=TRUE)
 
 
 
@@ -158,197 +152,4 @@ taxa <- assignTaxonomy(seqtab.nochim, "silva_nr99_v138.1_train_set.fa.gz", multi
 write.table(taxa, "Taxonomic_Table.txt", sep = "\t", quote=F)
 
 
-
-
-################
-### Phyloseq ###
-################
-
-### Install phyloseq and ggplot2 in R
-
-if (!require("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-BiocManager::install("phyloseq")
-
-install.packages("ggplot2")
-
-
-### Load Phyloseq and ggplot2
-library(phyloseq); packageVersion("phyloseq")
-library(ggplot2); packageVersion("ggplot2")
-
-theme_set(theme_bw())
-
-
-##### THIS SECTION IS ADDED BY BECKET TO CREATE RELATIVE ABUNDANCE TABLES #####
-##### SKIP TO "Construct sample data.frame" if you want to do normal Phyloseq code ####
-
-### Make matrix table
-t_seqtab <- as.data.frame(t(seqtab.nochim))
-t_seqtab1 <- t_seqtab
-t_seqtab1$abund_sum <- rowSums(t_seqtab1)
-
-taxabun <- merge(taxa, t_seqtab1, by = 'row.names', type = "full", match = "all")
-
-# sort rows by most abundant Phlya
-taxabun <- taxabun[with(taxabun, order(abund_sum, decreasing=TRUE)),]
-
-# remove row sums column
-taxabun <- taxabun[,-102]
-
-write.csv(taxabun, "Taxa Absolute Abundance Table.csv", row.names = TRUE, quote = F)
-
-
-### Convert to relative abundance
-library(dplyr)
-
-t_seqtab_perc <- t_seqtab %>% mutate(across(where(is.numeric), ~ ./sum(.)))
-
-t_seqtab_perc$abund_sum <- rowSums(t_seqtab_perc)
-
-taxabun_perc <- merge(taxa, t_seqtab_perc, by = 'row.names', type = "full", match = "all")
-
-# sort rows by most abundant Phlya
-taxabun_perc <- taxabun_perc[with(taxabun_perc, order(abund_sum, decreasing=TRUE)),]
-
-# remove row sums column
-taxabun_perc <- taxabun_perc[,-102]
-
-write.csv(taxabun_perc, "Taxa Relative Abundance Table.csv", row.names = TRUE, quote = F)
-
-
-
-
-
-
-
-### Construct sample data.frame
-samples.out <- rownames(seqtab.nochim)
-site <- sapply(strsplit(samples.out, "-"), `[`, 1)
-dirt <- sapply(strsplit(samples.out, "-"), `[`, 2)
-dirt <- sapply(strsplit(dirt, "_"), `[`, 1)
-dirt <- substr(dirt,2,2)
-sample <- sapply(strsplit(samples.out, "_"), `[`, 2)
-
-
-samdf <- data.frame(Site=site, Soil_Type=dirt, Sample=sample)
-rownames(samdf) <- samples.out
-
-
-ps <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows=FALSE), 
-               sample_data(samdf), 
-               tax_table(taxa))
-ps
-
-
-# Visualize Alpha-diversity by soil type:
-pdf("All Samples Alpha Diversity by Soil Type.pdf",width = 8, height = 7)
-plot_richness(ps, x="Soil_Type", measures=c("Shannon", "Simpson"), color="Site")
-dev.off()
-
-# Visualize Alpha-diversity by site:
-pdf("All Samples Alpha Diversity by Site.pdf",width = 8, height = 7)
-plot_richness(ps, x="Site", measures=c("Shannon", "Simpson"), color="Soil_Type")
-dev.off()
-
-
-
-# Beta-Diversity
-# Transform data to proportions as appropriate for Bray-Curtis distances
-ps.prop <- transform_sample_counts(ps, function(otu) otu/sum(otu))
-ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray")
-
-# Beta-diversity by soil type
-pdf("All Samples Beta Diversity by Soil Type.pdf",width = 8, height = 7)
-plot_ordination(ps.prop, ord.nmds.bray, color="Soil_Type", title="Bray NMDS")
-dev.off()
-
-
-# Beta-diversity by site
-pdf("All Samples Beta Diversity by Site.pdf",width = 8, height = 7)
-plot_ordination(ps.prop, ord.nmds.bray, color="Site", title="Bray NMDS")
-dev.off()
-
-
-# Bar Plots
-top <- names(sort(taxa_sums(ps), decreasing=TRUE))[1:25]
-ps.top <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU))
-ps.top <- prune_taxa(top, ps.top)
-
-# change taxrank to look at different ones
-taxrank <- "Genus"
-
-pdf(file=paste("All Samples",taxrank,"Barplot.pdf"),width = 8, height = 7)
-plot_bar(ps.top, x="Sample", fill=paste(taxrank)) + geom_bar(position="fill", stat="identity") + facet_wrap(~Soil_Type, scales="free_x")
-dev.off()
-
-
-# #Agglomerate to phylum-level and rename
-# library(dplyr)
-# ps_phylum <- phyloseq::tax_glom(ps, "Phylum")
-# phyloseq::taxa_names(ps_phylum) <- phyloseq::tax_table(ps_phylum)[, "Phylum"]
-# phyloseq::otu_table(ps_phylum)[1:5, 1:5]
-# 
-# #Melt and plot
-# phyloseq::psmelt(ps_phylum) %>%
-#   ggplot(data = ., aes(x = Soil_Type, y = Abundance)) +
-#   geom_boxplot(outlier.shape  = NA) +
-#   geom_jitter(aes(color = OTU), height = 0, width = .2) +
-#   labs(x = "", y = "Abundance\n") +
-#   facet_wrap(~ OTU, scales = "free")
-
-
-### Subset based on site (choose which subset you want to use, don't use both)
-# Can change what you choose to subset by (what's in parentheses)
-
-# By 1 site
-site <- "C1"
-samdf_SS <- subset(samdf, Site == paste(site))
-
-# By 2 sites
-site <- "C1"
-site2 <- "C2"
-samdf_SS <- subset(samdf, Site == paste(site) | Site == paste(site2))
-
-
-
-ps_SS <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows=FALSE), 
-               sample_data(samdf_SS), 
-               tax_table(taxa))
-ps_SS
-
-
-# Visualize Alpha-diversity by soil type:
-pdf(file=paste(site,"Samples Alpha Diversity by Soil Type.pdf"),width = 8, height = 7)
-plot_richness(ps_SS, x="Soil_Type", measures=c("Shannon", "Simpson"), color="Site")
-dev.off()
-
-
-# Beta-Diversity
-# Transform data to proportions as appropriate for Bray-Curtis distances
-ps.prop_SS <- transform_sample_counts(ps_SS, function(otu) otu/sum(otu))
-ord.nmds.bray_SS <- ordinate(ps.prop_SS, method="NMDS", distance="bray")
-
-# Beta-diversity by soil type
-pdf(file=paste(site,"Samples Beta Diversity by Soil Type.pdf"),width = 8, height = 7)
-plot_ordination(ps.prop_SS, ord.nmds.bray_SS, color="Soil_Type", title="Bray NMDS")
-dev.off()
-
-# Beta-diversity by site
-pdf(file=paste(site,"Samples Beta Diversity by Site.pdf"),width = 8, height = 7)
-plot_ordination(ps.prop_SS, ord.nmds.bray_SS, color="Site", title="Bray NMDS")
-dev.off()
-
-
-# Bar Plots
-top <- names(sort(taxa_sums(ps_SS), decreasing=TRUE))[1:50]
-ps_SS.top <- transform_sample_counts(ps_SS, function(OTU) OTU/sum(OTU))
-ps_SS.top <- prune_taxa(top, ps_SS.top)
-
-
-taxrank_site <- "Class"
-
-pdf(file=paste(site,"Samples",taxrank_site,"Barplot.pdf"),width = 8, height = 7)
-plot_bar(ps_SS.top, x="Sample", fill=paste(taxrank_site)) + geom_bar(position="fill", stat="identity") + facet_wrap(~Soil_Type, scales="free_x")
-dev.off()
 
