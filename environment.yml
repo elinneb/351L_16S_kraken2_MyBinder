@@ -15,4 +15,4 @@ dependencies:
   - bioconductor-decipher=2.18
   - bioconductor-decontam=1.10
   - r-biocmanager=1.30
-  - r-matrix=1.4
+  - r-matrix=1.3.2
