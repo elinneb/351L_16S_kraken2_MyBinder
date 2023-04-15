@@ -12,5 +12,3 @@ curl -L https://figshare.com/ndownloader/files/40054819 -o SILVA_DB/hash.k2d
 curl -L https://figshare.com/ndownloader/files/40054822 -o SILVA_DB/opts.k2d
 curl -L https://figshare.com/ndownloader/files/40054825 -o SILVA_DB/README.md
 curl -L https://figshare.com/ndownloader/files/40054828 -o SILVA_DB/taxo.k2d
-
-curl -L https://figshare.com/ndownloader/files/40180906 -o silva_nr99_v138.1_train_set.fa.gz
