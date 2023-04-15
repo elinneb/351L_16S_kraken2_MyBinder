@@ -148,7 +148,9 @@ write.table(seqtab.nochim, "seqtab.nochim.tsv", quote=FALSE, sep="\t", col.names
 
 
 ### Go to JuptyerLab tab and right-click to download the seqtab.nochim file locally
-### CLOSE BINDER DOWN. Restart binder link. WHEN YOU REOPEN, RESUME HERE!!!
+### CLOSE BINDER DOWN. Restart binder link. 
+### Drag-drop the seqtab.nochim file into the file list in JupyterLab launch page.
+### Reopen R-studio. WHEN YOU REOPEN, RESUME HERE!!!
 
 seqtab.nochim <- as.matrix(read.delim("seqtab.nochim.tsv", sep = "\t", header = T, row.names=1, stringsAsFactors=FALSE))
 
