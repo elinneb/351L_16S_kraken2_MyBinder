@@ -13,3 +13,4 @@ dependencies:
   - biom-format
   - r-dplyr
   - r-BiocManager
+  - bioconductor-phyloseq
