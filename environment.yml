@@ -3,6 +3,10 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - fastqc
+  - trimmomatic
+  - parallel
+  - multiqc
   - kraken2
   - kraken-biom
   - numpy
