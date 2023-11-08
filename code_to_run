@@ -12,9 +12,11 @@ multiqc .
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
 parallel --gnu "trimmomatic PE {1} {2} trimmed_paired/{1/.}_paired.fastq.gz {1/.}_unpaired.fastq.gz trimmed_paired/{2/.}_paired.fastq.gz {2/.}_unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10:8:true SLIDINGWINDOW:4:20" ::: *_R1.fastq.gz :::+ *_R2.fastq.gz
 
+## Go into the folder with the trimmed, paired fastq files
+cd trimmed_paired
+
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
-cd trimmed_fastq_files
 ls *_paired.fastq.gz | parallel --gnu "fastqc {}"
 
 ## Combine all the fastq outputs into a single output file
