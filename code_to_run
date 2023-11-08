@@ -23,7 +23,7 @@ multiqc .
 
 
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
-
+cd ~
 parallel --gnu "kraken2 --paired --db SILVA_DB {1} {2} --report {1/.}.txt" ::: *_R1.fastq_paired.fastq.gz :::+ *_R2.fastq_paired.fastq.gz
 
 
