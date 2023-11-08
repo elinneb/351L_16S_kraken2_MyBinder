@@ -2,6 +2,7 @@
 
 mkdir fastq_files
 mkdir fastq_files/trimmed_paired/
+mkdir kraken_outputs/
 mkdir SILVA_DB
 
 curl -L https://figshare.com/ndownloader/files/40054801 -o SILVA_DB/database50mers.kmer_distrib
