@@ -1,6 +1,9 @@
-## Run a quality control check on ALL the raw fastq files in the folder "HL1-8"
 
-ls HL1-8/*.fastq.gz | parallel --gnu "fastqc {}"
+## Go into the folder with the fastq files
+cd fastq_files
+
+## Run a quality control check on ALL the raw fastq files in the folder "fastq_files"
+*.fastq.gz | parallel --gnu "fastqc {}"
 
 
 
