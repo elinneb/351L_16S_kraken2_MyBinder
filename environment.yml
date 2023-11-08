@@ -11,3 +11,5 @@ dependencies:
   - kraken-biom
   - numpy
   - biom-format
+  - r-dplyr
+  - r-BiocManager
