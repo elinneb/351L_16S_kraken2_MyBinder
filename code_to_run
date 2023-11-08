@@ -1,3 +1,6 @@
+###############################################
+########## Run a quality check on the raw reads
+###############################################
 
 ## Go into the folder with the fastq files
 cd fastq_files
@@ -8,13 +11,20 @@ ls *.fastq.gz | parallel --gnu "fastqc {}"
 ## Combine all the fastq outputs into a single output file
 multiqc .
 
+###############################################
+########## Trim and filter the raw reads to output trimmed and filtered sequencing reads
+###############################################
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
 parallel --gnu "trimmomatic PE {1} {2} trimmed_paired/{1/.}_paired.fastq.gz {1/.}_unpaired.fastq.gz trimmed_paired/{2/.}_paired.fastq.gz {2/.}_unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10:8:true SLIDINGWINDOW:4:20" ::: *_R1.fastq.gz :::+ *_R2.fastq.gz
 
+
+###############################################
+########## Run a quality check on the trimmed, paired reads
+###############################################
+
 ## Go into the folder with the trimmed, paired fastq files
 cd trimmed_paired
-
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
 ls *_paired.fastq.gz | parallel --gnu "fastqc {}"
@@ -23,6 +33,9 @@ ls *_paired.fastq.gz | parallel --gnu "fastqc {}"
 multiqc .
 
 
+###############################################
+########## Classify trimmed, paired sequencing reads against a 16S sequence database, to get taxonomy of classified reads
+###############################################
 
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
 cd ~
