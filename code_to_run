@@ -34,7 +34,7 @@ multiqc .
 
 
 ###############################################
-########## Classify trimmed, paired sequencing reads against a 16S sequence database, to get taxonomy of classified reads
+########## Use Kraken2 to classify trimmed, paired sequencing reads against a 16S sequence database, to get taxonomy of classified reads
 ###############################################
 
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
