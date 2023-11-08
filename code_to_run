@@ -39,3 +39,7 @@ biom summarize-table -i merged_16S_kraken_outputs.biom -o merged_16S_kraken_outp
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
 
 biom convert -i merged_16S_kraken_outputs.biom -o merged_16S_kraken_OTU_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
+
+
+
+
