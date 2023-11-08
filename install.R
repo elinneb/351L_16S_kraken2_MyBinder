@@ -6,5 +6,6 @@ install.packages("reshape")
 
 install.packages("BiocManager")
 
-BiocManager::install("phyloseq")
-BiocManager::install("DESeq2")
+source("https://bioconductor.org/biocLite.R")
+biocLite(suppressUpdates = FALSE)
+biocLite("phyloseq")
