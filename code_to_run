@@ -8,14 +8,17 @@ cd fastq_files
 ## Run a quality control check on ALL the raw fastq files in the folder "fastq_files"
 fastqc *.fastq.gz
 
+
 ###############################################
 ########## Trim and filter the raw reads to output trimmed and filtered sequencing reads
 ###############################################
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
 
-for f in *_L001_R1_001.fastq.gz; do b=$(basename $f _L001_R1_001.fastq.gz); trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36; done
-
+for f in *_L001_R1_001.fastq.gz; do 
+    b=$(basename $f _L001_R1_001.fastq.gz)
+    trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+done
 
 
 ###############################################
@@ -29,23 +32,32 @@ cd trimmed_paired
 fastqc *_paired.fastq.gz
 
 
-
-
 ###############################################
 ########## Use Kraken2 to classify trimmed, paired sequencing reads against a 16S sequence database
 ########## To get taxonomy of classified reads
 ###############################################
 
-## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
+
+## Go into the home folder
+
 cd ~
-parallel --gnu "kraken2 --paired --db SILVA_DB {1} {2} --report kraken_outputs/{1/.}.txt" ::: fastq_files/trimmed_paired/*_R1.fastq_paired.fastq.gz :::+ fastq_files/trimmed_paired/*_R2.fastq_paired.fastq.gz
+
+
+## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
+
+for f1 in fastq_files/trimmed_paired/*_R1.trimmed.fastq.gz; do
+    f2="${f1/_R1/_R2}"
+    output_report="kraken_outputs/$(basename ${f1%%_R1.trimmed.fastq.gz}).kraken2.report"
+    output_file="kraken_outputs/$(basename ${f1%%_R1.trimmed.fastq.gz}).kraken2.output.txt"
+    kraken2 --paired --db SILVA_DB --output $output_report --report $output_file $f1 $f2
+done
+
 
 
 ## Merge Kraken2 output files into a single "biom" table
 
-kraken-biom kraken_outputs/*_R1.fastq_paired.fastq.txt -o merged_16S_kraken_outputs.biom
+kraken-biom kraken_outputs/*.kraken2.output.txt -o merged_16S_kraken_outputs.biom
 
-biom summarize-table -i merged_16S_kraken_outputs.biom -o merged_16S_kraken_outputs_summary.txt
 
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
