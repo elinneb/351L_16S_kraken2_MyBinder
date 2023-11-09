@@ -53,16 +53,14 @@ for f1 in fastq_files/trimmed_paired/*_R1.trimmed.fastq.gz; do
 done
 
 
+## Merge Kraken2 output files into a single "biom" table, by Phyla
 
-## Merge Kraken2 output files into a single "biom" table
-
-kraken-biom kraken_outputs/*.kraken2.output.txt -o merged_16S_kraken_outputs.biom
-
+kraken-biom kraken_outputs/*.kraken2.output.txt --max P --min P -o merged_16S_kraken_phyla.biom
 
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
 
-biom convert -i merged_16S_kraken_outputs.biom -o merged_16S_kraken_OTU_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
+biom convert -i merged_16S_kraken_phyla.biom -o merged_16S_kraken_phylum_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
 
 
 
