@@ -43,13 +43,11 @@ cd ~
 parallel --gnu "kraken2 --paired --db SILVA_DB {1} {2} --report kraken_outputs/{1/.}.txt" ::: fastq_files/trimmed_paired/*_R1.fastq_paired.fastq.gz :::+ fastq_files/trimmed_paired/*_R2.fastq_paired.fastq.gz
 
 
-
 ## Merge Kraken2 output files into a single "biom" table
 
 kraken-biom kraken_outputs/*_R1.fastq_paired.fastq.txt -o merged_16S_kraken_outputs.biom
 
 biom summarize-table -i merged_16S_kraken_outputs.biom -o merged_16S_kraken_outputs_summary.txt
-
 
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
