@@ -6,17 +6,16 @@
 cd fastq_files
 
 ## Run a quality control check on ALL the raw fastq files in the folder "fastq_files"
-ls *.fastq.gz | parallel --gnu "fastqc {}"
-
-## Combine all the fastq outputs into a single output file
-multiqc .
+fastqc *.fastq.gz
 
 ###############################################
 ########## Trim and filter the raw reads to output trimmed and filtered sequencing reads
 ###############################################
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
-parallel --gnu "trimmomatic PE {1} {2} trimmed_paired/{1/.}_paired.fastq.gz {1/.}_unpaired.fastq.gz trimmed_paired/{2/.}_paired.fastq.gz {2/.}_unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10:8:true SLIDINGWINDOW:4:20" ::: *_R1.fastq.gz :::+ *_R2.fastq.gz
+
+for f in *_L001_R1_001.fastq.gz; do b=$(basename $f _L001_R1_001.fastq.gz); trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36; done
+
 
 
 ###############################################
@@ -27,10 +26,9 @@ parallel --gnu "trimmomatic PE {1} {2} trimmed_paired/{1/.}_paired.fastq.gz {1/.
 cd trimmed_paired
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
-ls *_paired.fastq.gz | parallel --gnu "fastqc {}"
+fastqc *_paired.fastq.gz
 
-## Combine all the fastq outputs into a single output file
-multiqc .
+
 
 
 ###############################################
