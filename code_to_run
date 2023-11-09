@@ -29,7 +29,7 @@ done
 cd trimmed_paired
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
-fastqc *_paired.fastq.gz
+fastqc *.trimmed.fastq.gz
 
 
 ###############################################
