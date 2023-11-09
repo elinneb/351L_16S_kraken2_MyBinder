@@ -2,6 +2,7 @@ channels:
   - conda-forge
   - bioconda
   - defaults
+  - qiime2
 dependencies:
   - fastqc
   - trimmomatic
@@ -11,6 +12,4 @@ dependencies:
   - kraken-biom
   - numpy
   - biom-format
-  - r-dplyr
-  - r-BiocManager
-  - bioconductor-phyloseq
+  - qiime2
