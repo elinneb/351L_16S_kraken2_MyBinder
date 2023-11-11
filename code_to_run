@@ -3,10 +3,19 @@
 ###############################################
 
 ## Go into the folder with the fastq files
-cd fastq_files
+cd ~/fastq_files
 
 ## Run a quality control check on ALL the raw fastq files in the folder "fastq_files"
 fastqc *.fastq.gz
+
+# run multiqc to get a single summary of the fasted outputs in one place
+multiqc .
+
+
+# My Binder isn't able to visualize multiqc data, so you need to download it to see
+# Right click on the "multiqc_report.html" output and download
+# Click to open in downloads and it should open in browser
+
 
 
 ###############################################
@@ -17,7 +26,7 @@ fastqc *.fastq.gz
 
 for f in *_L001_R1_001.fastq.gz; do 
     b=$(basename $f _L001_R1_001.fastq.gz)
-    trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+    trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
 done
 
 
@@ -30,6 +39,14 @@ cd trimmed_paired
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
 fastqc *.trimmed.fastq.gz
+
+# run multiqc to get a single summary of the fasted outputs in one place
+multiqc .
+
+
+# My Binder isn't able to visualize multiqc data, so you need to download it to see
+# Right click on the "multiqc_report.html" output and download
+# Click to open in downloads and it should open in browser
 
 
 ###############################################
