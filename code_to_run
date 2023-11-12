@@ -23,6 +23,7 @@ multiqc .
 ###############################################
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
+# Highlight ALL FOUR of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
 for f in *_L001_R1_001.fastq.gz; do 
     b=$(basename $f _L001_R1_001.fastq.gz)
@@ -61,6 +62,7 @@ cd ~
 
 
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
+# Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
 for f1 in fastq_files/trimmed_paired/*_R1.trimmed.fastq.gz; do
     f2="${f1/_R1/_R2}"
