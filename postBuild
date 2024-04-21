@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir fastq_files/trimmed_paired/
 mkdir kraken_outputs/
 mkdir SILVA_DB
 
