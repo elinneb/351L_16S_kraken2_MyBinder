@@ -42,10 +42,10 @@ samps=('A_04_C22' 'A_06_C30' 'A_07_C29' 'A_08_C23' 'C_00_C39' 'C_05_C32' 'C_05_C
 # Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
 for i in "${samps[@]}"; do 
-    trimmomatic PE
-    "$i"_R1.fastq.gz "$i"_R2.fastq.gz 
-    trimmed_paired/"$i"_R1_paired.fastq.gz "$i"_R1_unpaired.fastq.gz trimmed_paired/"$i"_R2_paired.fastq.gz "$i"_R2_unpaired.fastq.gz 
-    ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
+    trimmomatic PE "$i"_R1.fastq.gz "$i"_R2.fastq.gz \
+        trimmed_paired/"$i"_R1_paired.fastq.gz "$i"_R1_unpaired.fastq.gz \
+        trimmed_paired/"$i"_R2_paired.fastq.gz "$i"_R2_unpaired.fastq.gz \
+        ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
 done
 
 
@@ -83,9 +83,10 @@ cd ~
 # Highlight ALL FIVE of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
 for i in "${samps[@]}"; do 
-    kraken2 --paired --db SILVA_DB 
-    --report kraken_outputs/"$i"_kraken2_report.txt 
-    fastq_files/trimmed_paired/"$i"_R1_paired.fastq.gz fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz
+    kraken2 --paired --db SILVA_DB \
+        --report kraken_outputs/"$i"_kraken2_report.txt \
+        fastq_files/trimmed_paired/"$i"_R1_paired.fastq.gz \
+        fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz
 done
 
 
