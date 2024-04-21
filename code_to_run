@@ -26,12 +26,13 @@ multiqc .
 samps=('A_04_C22' 'A_06_C30' 'A_07_C29' 'A_08_C23' 'C_00_C39' 'C_05_C32' 'C_05_C36' 'C_08_C20' 'C_09_C15' 'C_11_C38' 'C_12_C46' 'E_01_C42' 'E_03_C05' 'E_04_C33' 'E_05_C25' 'E_06_C19' 'E_08_C40' 'E_09_C24' 'E_10_C26' 'E_10_C34' 'S_02_C07' 'S_04_C16' 'S_04_C21' 'S_06_C31' 'S_07_C27' 'S_08_C17' 'S_08_C43' 'S_11_C35' 'S_12_C18')
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
-# Highlight ALL FOUR of the below lines at once (from "for" through "done"), copy, and paste into terminal
+# Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
-
-for f in *_L001_R1_001.fastq.gz; do 
-    b=$(basename $f _L001_R1_001.fastq.gz)
-    trimmomatic PE $f ${b}_L001_R2_001.fastq.gz trimmed_paired/${b}_R1.trimmed.fastq.gz ${b}_R1.unpaired.fastq.gz trimmed_paired/${b}_R2.trimmed.fastq.gz ${b}_R2.unpaired.fastq.gz ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
+for i in "${samps[@]}"; do 
+    trimmomatic PE
+    "$i"_R1.fastq.gz "$i"_R2.fastq.gz 
+    trimmed_paired/"$i"_R1_paired.fastq.gz "$i"_R1_unpaired.fastq.gz trimmed_paired/"$i"_R2_paired.fastq.gz "$i"_R2_unpaired.fastq.gz 
+    ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
 done
 
 
@@ -43,7 +44,7 @@ done
 cd trimmed_paired
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
-fastqc *.trimmed.fastq.gz
+fastqc *_trimmed.fastq.gz
 
 # run multiqc to get a single summary of the fasted outputs in one place
 multiqc .
@@ -68,19 +69,16 @@ cd ~
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
 # Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
-for i in "${samps[@]}"; do kraken2 --paired  --threads 32 --db ~/SILVA_DB --report kraken_outputs/"$i".eukriboFULL.kraken2.report.txt fastq_files/trimmed_paired/"$i"_R1_paired.fastq.gz fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz; done;
-
-for f1 in fastq_files/trimmed_paired/*_R1.trimmed.fastq.gz; do
-    f2="${f1/_R1/_R2}"
-    output_report="kraken_outputs/$(basename ${f1%%_R1.trimmed.fastq.gz}).kraken2.report"
-    output_file="kraken_outputs/$(basename ${f1%%_R1.trimmed.fastq.gz}).kraken2.output.txt"
-    kraken2 --paired --db SILVA_DB --output $output_report --report $output_file $f1 $f2
+for i in "${samps[@]}"; do 
+    kraken2 --paired --db SILVA_DB 
+    --report kraken_outputs/"$i"_kraken2_report.txt 
+    fastq_files/trimmed_paired/"$i"_R1_paired.fastq.gz fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz
 done
 
 
 ## Merge Kraken2 output files into a single "biom" table, by Phyla
 
-kraken-biom kraken_outputs/*.kraken2.output.txt --max P --min P -o merged_16S_kraken_phyla.biom
+kraken-biom kraken_outputs/*_kraken2_report.txt --max P --min P -o merged_16S_kraken_phyla.biom
 
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
