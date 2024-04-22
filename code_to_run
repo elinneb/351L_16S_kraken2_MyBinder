@@ -94,6 +94,10 @@ for i in "${samps[@]}"; do
 done
 
 
+###############################################
+########## Wrangle the data to get it in the format we want
+###############################################
+
 ## Merge Kraken2 output files into a single "biom" table, by Class
 
 kraken-biom kraken_outputs/*_kraken2_report.txt --max C --min C -o merged_16S_kraken_class.biom
