@@ -4,18 +4,21 @@
 
 # Drag and drop (or upload) the zipped folder "fastq_files" downloaded from CC into the file explorer on the left
 # WAIT for the upload bar at the bottom to finish
+# Click on "Terminal" icon in the right panel. Window with "[/home/jovyan]$" in yellow should pop up.
 
-## In the terminal:
+## Begin running code in the terminal (paste uncommented lines into terminal and hit enter):
 
-# Unzip the folder you added to the MyBinder
-unzip fastq_files
+# Unzip the folder you added to the MyBinder and remove hidden MacOSX folders
+unzip fastq_files && rm -r __MACOSX
+
+# You should have a new folder "fastq_files", that has 1) all the sequence data, 2) a file with Illumina adapater sequences, and 3) an empty "trimmed_paired" folder in it.
 
 
 ###############################################
 ########## Run a quality check on the raw reads
 ###############################################
 
-# Go into the folder with the fastq files
+# Bring the terminal into the folder with the fastq files
 cd ~/fastq_files
 
 # Run a quality control check on ALL the raw fastq files in the folder "fastq_files"
@@ -53,7 +56,7 @@ done
 ########## Run a quality check on the trimmed, paired reads
 ###############################################
 
-## Go into the folder with the trimmed, paired fastq files
+## Bring the terminal into the folder with the trimmed, paired fastq files
 cd trimmed_paired
 
 ## Re-run a quality control check on ALL the PAIRED, FILTERED fastq files
@@ -74,13 +77,14 @@ multiqc .
 ###############################################
 
 
-## Go into the home folder
+## Bring the terminal into the home folder
 
 cd ~
 
 
 ## Perform taxonomic classification of filtered reads against the 16S rRNA database, using the classifier program "Kraken2"
-# Highlight ALL FIVE of the below lines at once (from "for" through "done"), copy, and paste into terminal
+# Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
+
 
 for i in "${samps[@]}"; do 
     kraken2 --paired --db SILVA_DB \
@@ -90,19 +94,23 @@ for i in "${samps[@]}"; do
 done
 
 
-## Merge Kraken2 output files into a single "biom" table, by Phyla
+## Merge Kraken2 output files into a single "biom" table, by Class
 
-kraken-biom kraken_outputs/*_kraken2_report.txt --max P --min P -o merged_16S_kraken_phyla.biom
+kraken-biom kraken_outputs/*_kraken2_report.txt --max C --min C -o merged_16S_kraken_class.biom
+
 
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
 
-biom convert -i merged_16S_kraken_phyla.biom -o merged_16S_kraken_phylum_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
-
-
-## Sort the output file in decreasing order to make it easier to graph later in excel
-
-sort -t$'\t' -k2,2nr merged_16S_kraken_phylum_table.txt > merged_16S_kraken_phylum_sorted.txt
+biom convert -i merged_16S_kraken_class.biom -o merged_16S_kraken_class_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
 
 
 
+## This is super ugly code, but it basically cleans up the output to you don't have to do the work in Excel later
+## Steps: Delete first column and row, move last column to first column, deletes row that has Cyanobacteria (Choloroplasts) and Arthropods in it, orders columns in decreasing order by first sample
+
+awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; print ""}' merged_16S_kraken_class_table.txt | awk 'BEGIN{FS=OFS="\t"} {print $NF, substr($0, 1, length($0)-length($NF)-1)}' | awk '!/^k__Bacteria; p__Cyanobacteria;/' | awk '!/^k__Holozoa; p__Arthropoda;/' > temp.txt && { head -n 1 temp.txt; tail -n +2 temp.txt | sort -t$'\t' -k2,2nr; } > merged_16S_kraken_class_clean.txt
+
+
+## Right-click and Download the file "merged_16S_kraken_class_clean.txt"
+## Open it on your computer in Excel to create a stacked barplot of the data
