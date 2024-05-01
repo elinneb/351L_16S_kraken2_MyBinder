@@ -104,7 +104,7 @@ kraken-biom kraken_outputs/*_kraken2_report.txt --max C --min C -o merged_16S_kr
 
 ## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
 
-biom convert -i merged_16S_kraken_class.biom -o merged_16S_kraken_class_table.txt --to-tsv --header-key taxonomy --output-metadata-id "ConsensusLineage"
+biom convert -i merged_16S_kraken_class.biom -o merged_16S_kraken_class_table.txt --to-tsv --header-key taxonomy --output-metadata-id "taxonomy"
 
 
 
@@ -116,3 +116,31 @@ awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; pr
 
 ## Right-click and Download the file "merged_16S_kraken_class_clean.txt"
 ## Open it on your computer in Excel to create a stacked barplot of the data
+
+
+###############################################
+########## OPTIONAL: If you want to infer functional information from the data!
+###############################################
+
+## Merge Kraken2 output files into a single "biom" table
+
+kraken-biom kraken_outputs/*_kraken2_report.txt -o merged_16S_kraken_ALL.biom
+
+
+## Biom tables are hard to read, so convert biom table to "OTU" table, which has abundances of each consensus lineage
+
+biom convert -i merged_16S_kraken_ALL.biom -o merged_16S_kraken_ALL_table.txt --to-tsv --header-key taxonomy --output-metadata-id "taxonomy"
+
+
+
+## This is super ugly code, but it basically cleans up the output to you don't have to do the work in Excel later
+## Steps: Delete first column and row, move last column to first column, deletes row that has Cyanobacteria (Choloroplasts) and Arthropods in it, orders columns in decreasing order by first sample
+
+awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; print ""}' merged_16S_kraken_ALL_table.txt | awk 'BEGIN{FS=OFS="\t"} {print $NF, substr($0, 1, length($0)-length($NF)-1)}' | awk '!/^k__Bacteria; p__Cyanobacteria;/' | awk '!/^k__Holozoa; p__Arthropoda;/' > temp.txt && { head -n 1 temp.txt; tail -n +2 temp.txt | sort -t$'\t' -k2,2nr; } > merged_16S_kraken_ALL_clean.tsv
+
+
+## Run FAPROTAX to infer functional groups from the taxonomic output
+FAPROTAX_1.2.7/collapse_table.py -i merged_16S_kraken_ALL_clean.tsv -o merged_16S_func_table.tsv -g FAPROTAX_1.2.7/FAPROTAX.txt -d "taxonomy" -c "#" -v
+
+
+
