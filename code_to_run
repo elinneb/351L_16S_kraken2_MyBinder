@@ -147,4 +147,7 @@ chmod +x FAPROTAX_1.2.7/collapse_table.py
 FAPROTAX_1.2.7/collapse_table.py -i merged_16S_kraken_ALL_clean.tsv -o merged_16S_func_table.tsv -g FAPROTAX_1.2.7/FAPROTAX.txt -d "taxonomy" -c "#" -v
 
 
+## Right-click and Download the file "merged_16S_func_table.tsv"
+## Open it on your computer in Excel to analyze and visualize inferred functional data
+## REMEMBER these are still absolute counts - need to be converted to relative abundance
 
