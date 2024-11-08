@@ -40,7 +40,7 @@ multiqc .
 ###############################################
 
 # set your sample names that you loaded
-samps=('A_04_C22' 'A_06_C30' 'A_07_C29' 'A_08_C23' 'C_00_C39' 'C_05_C32' 'C_05_C36' 'C_08_C20' 'C_09_C15' 'C_11_C38' 'C_12_C46' 'E_01_C42' 'E_03_C05' 'E_04_C33' 'E_05_C25' 'E_06_C19' 'E_08_C40' 'E_09_C24' 'E_10_C26' 'E_10_C34' 'S_02_C07' 'S_04_C16' 'S_04_C21' 'S_06_C31' 'S_07_C27' 'S_08_C17' 'S_08_C43' 'S_11_C35' 'S_12_C18')
+samps=('01_07_A' '01_07_B' '01_08_A' '01_08_B' '02_07_A' '02_07_A' '02_07_B' '02_08_A' '02_08_B' '03_07_A' '03_07_A' '03_07_B' '03_08_B' '04_07_B' '04_08_A' '05_07_A' '05_07_B' '05_08_A' '05_08_B' '06_08_A' '06_08_B' '07_07_A' '07_07_B' '07_08_A' '07_08_B' '08_07_A' '08_08_A')
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
 # Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
