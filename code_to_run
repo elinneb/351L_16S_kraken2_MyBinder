@@ -120,11 +120,12 @@ awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; pr
 
 
 
+
 ###############################################
 ########## OPTIONAL: If you want to infer functional information from the data!
 ###############################################
 
-## Merge Kraken2 output files into a single "biom" table, incorporating all taxonomic levels (not just to Class)
+## Merge Kraken2 output files into a single "biom" table, incorporating all taxonomic levels (not just to Order)
 
 kraken-biom kraken_outputs/*_kraken2_report.txt -o merged_16S_kraken_ALL.biom
 
