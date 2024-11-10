@@ -11,3 +11,4 @@ dependencies:
   - kraken-biom
   - numpy
   - biom-format
+  - pandas
