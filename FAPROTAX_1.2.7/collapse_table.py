@@ -56,7 +56,7 @@ import re
 import fnmatch
 import gzip
 
-from numpy import NaN
+from numpy import nan as NaN
 
 
 # OPTIONAL DEPENDENCIES
