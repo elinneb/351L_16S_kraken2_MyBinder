@@ -40,7 +40,7 @@ multiqc .
 ###############################################
 
 # set your sample names that you loaded
-samps=('01_07' '01_08' '02_07' '02_08' '03_07' '03_08' '04_07' '04_08' '05_07' '05_08' '07_07' '07_08' '08_07' '08_08')
+samps=($(ls *_R1.fastq.gz 2>/dev/null | sed -E 's/_R1\.fastq\.gz$//'))
 
 ## Trim/filter the raw fastq files, remove adapter sequences, and output paired and unpaired reads separately
 # Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
