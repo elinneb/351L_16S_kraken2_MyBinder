@@ -109,9 +109,13 @@ biom convert -i merged_16S_kraken_order.biom -o merged_16S_kraken_order_table.tx
 
 
 ## This is super ugly code, but it basically cleans up the output to you don't have to do the work in Excel later
-## Steps: Delete first column and row, move last column to first column, deletes row that has Cyanobacteria (Choloroplasts) and Arthropods in it, orders columns in decreasing order by first sample
+## Steps: Delete first column and row, move last column to first column, deletes row that has Cyanobacteria (Choloroplasts) and Arthropods in it, orders rows in decreasing order
 
-awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; print ""}' merged_16S_kraken_order_table.txt | awk 'BEGIN{FS=OFS="\t"} {print $NF, substr($0, 1, length($0)-length($NF)-1)}' | awk '!/^k__Bacteria; p__Cyanobacteria; c__Cyanobacteriia; o__Chloroplast;/' | awk '!/^k__Holozoa; p__Arthropoda;/' > temp.txt && { head -n 1 temp.txt; tail -n +2 temp.txt | sort -t$'\t' -k2,2nr; } > merged_16S_kraken_order_clean.txt
+awk -F'\t' 'NR>1 {for (i=2; i<=NF; i++) printf "%s%s", (i>2 ? "\t" : ""), $i; print ""}' merged_16S_kraken_order_table.txt |
+awk 'BEGIN{FS=OFS="\t"} {print $NF, substr($0, 1, length($0)-length($NF)-1)}' |
+awk '!/^k__Bacteria; p__Cyanobacteria; c__Cyanobacteriia; o__Chloroplast;/' |
+awk '!/^k__Holozoa; p__Arthropoda;/' |
+awk -f sort_rows_compat.awk > merged_16S_kraken_order_clean.txt
 
 
 ## Right-click and Download the file "merged_16S_kraken_order_clean.txt"
