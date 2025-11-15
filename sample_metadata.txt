@@ -1,0 +1,55 @@
+Sample	Month	Site
+DAC-07	Jul	De Anza Cove
+DAC-08	Aug	De Anza Cove
+DAC-09	Sep	De Anza Cove
+DAC-10	Oct	De Anza Cove
+DAC-11	Nov	De Anza Cove
+DAC-12	Dec	De Anza Cove
+FSB-07	Jul	Fiesta Sunset Beach
+FSB-08	Aug	Fiesta Sunset Beach
+FSB-09	Sep	Fiesta Sunset Beach
+FSB-11	Nov	Fiesta Sunset Beach
+FSB-12	Dec	Fiesta Sunset Beach
+FSP-07	Jul	Fanuel Street Park
+FSP-08	Aug	Fanuel Street Park
+FSP-09	Sep	Fanuel Street Park
+FSP-10	Oct	Fanuel Street Park
+FSP-11	Nov	Fanuel Street Park
+FSP-12	Dec	Fanuel Street Park
+KFM-07	Jul	Kendall Frost Marsh
+KFM-08	Aug	Kendall Frost Marsh
+KFM-09	Sep	Kendall Frost Marsh
+KFM-10	Oct	Kendall Frost Marsh
+KFM-12	Dec	Kendall Frost Marsh
+LLN-07	Jul	Leisure Lagoon
+LLN-08	Aug	Leisure Lagoon
+LLN-09	Sep	Leisure Lagoon
+LLN-10	Oct	Leisure Lagoon
+LLN-11	Nov	Leisure Lagoon
+LLN-12	Dec	Leisure Lagoon
+MPT-07	Jul	Mission Point
+MPT-08	Aug	Mission Point
+MPT-09	Sep	Mission Point
+MPT-11	Nov	Mission Point
+MPT-12	Dec	Mission Point
+PPT-07	Jul	Paradise Point
+PPT-08	Aug	Paradise Point
+PPT-09	Sep	Paradise Point
+PPT-10	Oct	Paradise Point
+PPT-11	Nov	Paradise Point
+PPT-12	Dec	Paradise Point
+RCR-08	Aug	Rose Creek
+RCR-09	Sep	Rose Creek
+RCR-10	Oct	Rose Creek
+RCR-11	Nov	Rose Creek
+RCR-12	Dec	Rose Creek
+SSH-07	Jul	South Shores
+SSH-08	Aug	South Shores
+SSH-10	Oct	South Shores
+SSH-11	Nov	South Shores
+TCR-07	Jul	Tecolote Creek
+TCR-08	Aug	Tecolote Creek
+TCR-09	Sep	Tecolote Creek
+TCR-10	Oct	Tecolote Creek
+TCR-11	Nov	Tecolote Creek
+TCR-12	Dec	Tecolote Creek
