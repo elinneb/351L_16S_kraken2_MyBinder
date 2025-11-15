@@ -1,18 +1,12 @@
-# Load packages
+# Install and Load packages
 library(phyloseq)
-library(dplyr)
-library(tidyverse)
+install.packages("microeco")
 library(microeco)
+install.packages("file2meco")
 library(file2meco)
 library(ggplot2)
 library(RColorBrewer)
 library(cowplot)
-
-
-# Download required files and organize them into a folder
-# Set the working directory
-# Click "Session" -> "Set Working Directory" -> "Choose Directory"
-setwd("/Users/elinne/Desktop/2025_351L_MissionBay_R/")
 
 # Import biom table from kraken2 analysis
 ps <- import_biom("merged_16S_kraken_ALL.biom")
