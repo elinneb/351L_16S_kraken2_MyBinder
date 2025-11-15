@@ -1,8 +1,13 @@
+name: microbiome-env
 channels:
   - conda-forge
   - bioconda
-  - defaults
+channel_priority: strict
 dependencies:
+  # --- pin Python to what Binder already uses, helps the solver
+  - python=3.10
+
+  # --- bio CLI stack (your original)
   - fastqc
   - trimmomatic
   - parallel
@@ -10,17 +15,17 @@ dependencies:
   - kraken2
   - kraken-biom
   - numpy
-  - biom-format
   - pandas
-  # --- R and microbiome analysis ---
+  - biom-format
+
+  # --- R stack (minimal; no r-essentials)
   - r-base=4.3
-  - r-essentials
+  - r-irkernel
   - bioconductor-phyloseq
   - bioconductor-biomformat
   - bioconductor-rhdf5
-  # CRAN packages (from conda-forge)
-  - r-microeco
-  - r-file2meco
   - r-ggplot2
   - r-cowplot
   - r-rcolorbrewer
+  - r-microeco
+  - r-file2meco
