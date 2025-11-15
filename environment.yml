@@ -12,9 +12,15 @@ dependencies:
   - numpy
   - biom-format
   - pandas
-  - python=3.11
+  # --- R and microbiome analysis ---
   - r-base=4.3
-  - bash_kernel=0.9.0
-  - coreutils=9.1
-  - r-phyloseq
+  - r-essentials
+  - bioconductor-phyloseq
+  - bioconductor-biomformat
+  - bioconductor-rhdf5
+  # CRAN packages (from conda-forge)
+  - r-microeco
+  - r-file2meco
   - r-ggplot2
+  - r-cowplot
+  - r-rcolorbrewer
