@@ -27,5 +27,3 @@ dependencies:
   - r-ggplot2
   - r-cowplot
   - r-rcolorbrewer
-  - r-microeco
-  - r-file2meco
