@@ -1,0 +1,53 @@
+# Load packages
+library(phyloseq)
+library(dplyr)
+library(tidyverse)
+library(microeco)
+library(file2meco)
+library(ggplot2)
+library(RColorBrewer)
+library(cowplot)
+
+
+# Download required files and organize them into a folder
+# Set the working directory
+# Click "Session" -> "Set Working Directory" -> "Choose Directory"
+setwd("/Users/elinne/Desktop/2025_351L_MissionBay_R/")
+
+# Import biom table from kraken2 analysis
+ps <- import_biom("merged_16S_kraken_ALL.biom")
+
+# Set new tax table column names
+colnames(tax_table(ps)) <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+
+# Clean up column names (only text before 1st "_") of the OTU table
+sample_names(ps) <- sub("_.*", "", sample_names(ps))
+
+# Clean up ID names (only text before 1st "_") of the sample data table
+ps@sam_data$Id <- sample_names(ps)
+
+# Read in metadata table
+metadata <- read.table("sample_metadata.txt", sep = "\t", header = TRUE, row.names = 1)
+
+# Convert Metadata to a sample_data Object
+metadata <- sample_data(metadata)
+
+# Assign the metadata to the phyloseq object
+ps <- merge_phyloseq(ps, metadata)
+
+# Filter out the "Chloroplast" order from the dataset
+ps <- subset_taxa(ps, Order != "o__Chloroplast" & Family != "f__Mitochondria")
+
+## Create Microtable object (microeco)
+meco_dataset <- phyloseq2meco(ps)
+
+# Create object that agglomerates to Order
+t <- trans_abund$new(dataset = meco_dataset, taxrank = "Order", ntaxa = 25)
+
+g_s <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Site"), legend_text_italic = FALSE, clustering = FALSE, x_axis_name = NULL, color_values = RColorBrewer::brewer.pal(10, "Paired")) + theme_classic() + theme(text = element_text(size = 18), axis.text = element_text(size = 14), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + guides(fill = guide_legend(ncol = 1, title = "Order"))
+g_m <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Month"), legend_text_italic = FALSE, clustering = FALSE, x_axis_name = NULL, color_values = RColorBrewer::brewer.pal(10, "Paired")) + theme_classic() + theme(text = element_text(size = 18), axis.text = element_text(size = 14), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + guides(fill = guide_legend(ncol = 1, title = "Order"))
+
+plot_grid(g_s, g_m, ncol = 1, align = 'v', labels = "AUTO")
+
+ggsave("MB_16S_composition_barplot.pdf", width = 24, height = 18, limitsize = FALSE)
+
