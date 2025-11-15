@@ -13,3 +13,10 @@ curl -L https://figshare.com/ndownloader/files/40054819 -o SILVA_DB/hash.k2d
 curl -L https://figshare.com/ndownloader/files/40054822 -o SILVA_DB/opts.k2d
 curl -L https://figshare.com/ndownloader/files/40054825 -o SILVA_DB/README.md
 curl -L https://figshare.com/ndownloader/files/40054828 -o SILVA_DB/taxo.k2d
+
+# Install CRAN packages into the conda R ---
+# Use the R inside the conda env (available because environment.yml installed r-base)
+R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
+
+# Smoke test: fail the build if they didn’t install
+R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
