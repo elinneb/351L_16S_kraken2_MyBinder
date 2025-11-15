@@ -24,8 +24,6 @@ dependencies:
   - bioconductor-phyloseq
   - bioconductor-biomformat
   - bioconductor-rhdf5
-  - r-microeco
-  - r-file2meco
   - r-ggplot2
   - r-cowplot
   - r-rcolorbrewer
