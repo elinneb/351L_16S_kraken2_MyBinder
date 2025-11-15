@@ -1,22 +1,32 @@
 #!/bin/bash
+set -eux  # fail fast and echo commands
 
-mkdir kraken_outputs/
-mkdir SILVA_DB
+# --- dirs
+mkdir -p kraken_outputs SILVA_DB
 
-curl -L https://figshare.com/ndownloader/files/40054801 -o SILVA_DB/database50mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054804 -o SILVA_DB/database75mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054807 -o SILVA_DB/database100mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054810 -o SILVA_DB/database150mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054813 -o SILVA_DB/database200mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054816 -o SILVA_DB/database250mers.kmer_distrib
-curl -L https://figshare.com/ndownloader/files/40054819 -o SILVA_DB/hash.k2d
-curl -L https://figshare.com/ndownloader/files/40054822 -o SILVA_DB/opts.k2d
-curl -L https://figshare.com/ndownloader/files/40054825 -o SILVA_DB/README.md
-curl -L https://figshare.com/ndownloader/files/40054828 -o SILVA_DB/taxo.k2d
+# --- download the prebuilt SILVA Kraken2 bundle (SSU, 138.2)
+# The directory lists 'SILVA_138_2_k2db.tgz' with an .md5 file alongside it.
+curl -fL --retry 5 -o /tmp/SILVA_138_2_k2db.tgz      "https://www.arb-silva.de/current-release/Kraken2/2.1.6/SSU/SILVA_138_2_k2db.tgz"
+curl -fL --retry 5 -o /tmp/SILVA_138_2_k2db.tgz.md5  "https://www.arb-silva.de/current-release/Kraken2/2.1.6/SSU/SILVA_138_2_k2db.tgz.md5"
 
-# Install CRAN packages into the conda R ---
-# Use the R inside the conda env (available because environment.yml installed r-base)
+# --- verify checksum (non-interactive)
+cd /tmp
+# md5 file format typically: "<hash>  SILVA_138_2_k2db.tgz"
+md5sum -c SILVA_138_2_k2db.tgz.md5
+
+# --- extract into SILVA_DB
+tar -xzf /tmp/SILVA_138_2_k2db.tgz -C "$HOME/SILVA_DB" --strip-components=1 || \
+tar -xzf /tmp/SILVA_138_2_k2db.tgz -C "$HOME/SILVA_DB"
+
+# --- quick integrity checks (must be real k2d binaries, not HTML)
+for f in "$HOME/SILVA_DB"/hash.k2d "$HOME/SILVA_DB"/opts.k2d "$HOME/SILVA_DB"/taxo.k2d; do
+  [ -s "$f" ] || { echo "Missing/empty: $f"; exit 1; }
+  file "$f" | grep -qi 'html' && { echo "Bad file (HTML): $f"; exit 1; }
+done
+
+# Optional: make sure kraken2 recognizes the DB
+kraken2-inspect --db "$HOME/SILVA_DB" | head -n 3 >/dev/null
+
+# --- your R installs (unchanged)
 R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
-
-# Smoke test: fail the build if they didn’t install
 R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
