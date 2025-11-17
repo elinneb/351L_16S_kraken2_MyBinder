@@ -33,8 +33,12 @@ ps <- subset_taxa(ps, Order != "o__Chloroplast" & Family != "f__Mitochondria")
 ## Create Microtable object (microeco)
 meco_dataset <- phyloseq2meco(ps)
 
+############# TO GENERATE COMMUNITY COMPOSITION PLOTS
+
 # Create object that agglomerates to Order
 t <- trans_abund$new(dataset = meco_dataset, taxrank = "Order", ntaxa = 25)
+t$data_abund$Site <- factor(t$data_abund$Site, levels = c("Mission Point","Paradise Point","Fiesta Sunset Beach", "Fanuel Street Park", "Kendall Frost Marsh", "De Anza Cove", "Leisure Lagoon", "South Shores", "Tecolote Creek", "Rose Creek"))
+
 
 g_s <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Site"), legend_text_italic = FALSE, clustering = FALSE, x_axis_name = NULL, color_values = RColorBrewer::brewer.pal(10, "Paired")) + theme_classic() + theme(text = element_text(size = 18), axis.text = element_text(size = 14), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + guides(fill = guide_legend(ncol = 1, title = "Order"))
 g_m <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Month"), legend_text_italic = FALSE, clustering = FALSE, x_axis_name = NULL, color_values = RColorBrewer::brewer.pal(10, "Paired")) + theme_classic() + theme(text = element_text(size = 18), axis.text = element_text(size = 14), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + guides(fill = guide_legend(ncol = 1, title = "Order"))
@@ -42,3 +46,31 @@ g_m <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Month"), 
 plot_grid(g_s, g_m, ncol = 1, align = 'v', labels = "AUTO")
 
 ggsave("MB_16S_composition_barplot.pdf", width = 24, height = 18, limitsize = FALSE)
+
+
+############# TO ANALYZE ALPHA DIVERSITY
+
+plot_richness(ps, x = "Month", measures = c("Shannon", "Simpson"))+
+  geom_boxplot(fill = "white", color = "black") +
+  geom_point(aes(color = factor(Id))) +
+  geom_jitter(aes(color = factor(Id))) + 
+  theme(
+    axis.text.x = element_text(angle = 270, hjust = 0),
+  ) 
+
+ggsave("MB_16S__alpha_byMonth.pdf", width = 10, height = 6, limitsize = FALSE)
+
+
+ps@sam_data$Site <- factor(ps@sam_data$Site, levels = c("Mission Point","Paradise Point","Fiesta Sunset Beach", "Fanuel Street Park", "Kendall Frost Marsh", "De Anza Cove", "Leisure Lagoon", "South Shores", "Tecolote Creek", "Rose Creek"))
+
+plot_richness(ps, x = "Site", measures = c("Shannon", "Simpson"))+
+  geom_boxplot(fill = "white", color = "black") +
+  geom_point(aes(color = factor(Id))) +
+  geom_jitter(aes(color = factor(Id))) + 
+  theme(
+    axis.text.x = element_text(angle = 270, hjust = 0),
+  ) 
+
+ggsave("MB_16S__alpha_bySite.pdf", width = 10, height = 6, limitsize = FALSE)
+
+
