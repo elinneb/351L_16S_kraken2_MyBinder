@@ -4,39 +4,101 @@ set -euo pipefail
 mkdir -p kraken_outputs
 mkdir -p SILVA_DB
 
-download() {
+UA="Mozilla/5.0"
+
+fetch_file() {
   local out="$1"
   local url="$2"
+  local attempts="${3:-10}"
 
-  rm -f "$out" "$out.headers"
+  local tmp="${out}.part"
+  local hdr="${out}.headers"
+  local i=1
 
-  curl --fail --location \
-       --retry 10 \
-       --retry-delay 5 \
-       --retry-all-errors \
-       --connect-timeout 30 \
-       --max-time 1800 \
-       --user-agent "Mozilla/5.0" \
-       --dump-header "$out.headers" \
-       --output "$out" \
-       "$url"
+  while [ "$i" -le "$attempts" ]; do
+    echo "Downloading $out (attempt $i/$attempts)"
+    rm -f "$tmp" "$hdr"
 
-  test -s "$out" || { echo "Empty file: $out"; cat "$out.headers" || true; exit 1; }
-  file "$out" | grep -qi html && { echo "Bad download (HTML): $out"; cat "$out.headers" || true; exit 1; }
+    # First try curl
+    if curl --fail --location --http1.1 \
+        --retry 5 \
+        --retry-all-errors \
+        --connect-timeout 30 \
+        --max-time 1800 \
+        --user-agent "$UA" \
+        --dump-header "$hdr" \
+        --output "$tmp" \
+        "$url"; then
+
+      # Reject empty payloads
+      if [ ! -s "$tmp" ]; then
+        echo "Downloaded empty file: $out"
+      # Reject HTML masquerading as a download
+      elif file "$tmp" | grep -qi html; then
+        echo "Downloaded HTML instead of binary/text: $out"
+      else
+        mv "$tmp" "$out"
+        echo "OK: $out"
+        return 0
+      fi
+    else
+      echo "curl failed for $out"
+    fi
+
+    # Fallback to wget on each failed validation round
+    rm -f "$tmp"
+    if wget \
+        --tries=5 \
+        --timeout=30 \
+        --user-agent="$UA" \
+        -O "$tmp" \
+        "$url"; then
+
+      if [ ! -s "$tmp" ]; then
+        echo "wget also produced empty file: $out"
+      elif file "$tmp" | grep -qi html; then
+        echo "wget also produced HTML: $out"
+      else
+        mv "$tmp" "$out"
+        echo "OK via wget: $out"
+        return 0
+      fi
+    else
+      echo "wget failed for $out"
+    fi
+
+    rm -f "$tmp"
+    sleep $(( i * 5 ))
+    i=$(( i + 1 ))
+  done
+
+  echo "ERROR: failed to download valid file after $attempts attempts: $out"
+  [ -f "$hdr" ] && { echo "Last response headers for $out:"; cat "$hdr"; }
+  exit 1
 }
 
-download SILVA_DB/database50mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054801?download=1"
-download SILVA_DB/database75mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054804?download=1"
-download SILVA_DB/database100mers.kmer_distrib "https://figshare.com/ndownloader/files/40054807?download=1"
-download SILVA_DB/database150mers.kmer_distrib "https://figshare.com/ndownloader/files/40054810?download=1"
-download SILVA_DB/database200mers.kmer_distrib "https://figshare.com/ndownloader/files/40054813?download=1"
-download SILVA_DB/database250mers.kmer_distrib "https://figshare.com/ndownloader/files/40054816?download=1"
-download SILVA_DB/hash.k2d                    "https://figshare.com/ndownloader/files/40054819?download=1"
-download SILVA_DB/opts.k2d                    "https://figshare.com/ndownloader/files/40054822?download=1"
-download SILVA_DB/README.md                   "https://figshare.com/ndownloader/files/40054825?download=1"
-download SILVA_DB/taxo.k2d                    "https://figshare.com/ndownloader/files/40054828?download=1"
+fetch_file SILVA_DB/database50mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054801?download=1"
+fetch_file SILVA_DB/database75mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054804?download=1"
+fetch_file SILVA_DB/database100mers.kmer_distrib "https://figshare.com/ndownloader/files/40054807?download=1"
+fetch_file SILVA_DB/database150mers.kmer_distrib "https://figshare.com/ndownloader/files/40054810?download=1"
+fetch_file SILVA_DB/database200mers.kmer_distrib "https://figshare.com/ndownloader/files/40054813?download=1"
+fetch_file SILVA_DB/database250mers.kmer_distrib "https://figshare.com/ndownloader/files/40054816?download=1"
+
+fetch_file SILVA_DB/hash.k2d   "https://figshare.com/ndownloader/files/40054819?download=1"
+fetch_file SILVA_DB/opts.k2d   "https://figshare.com/ndownloader/files/40054822?download=1"
+fetch_file SILVA_DB/README.md  "https://figshare.com/ndownloader/files/40054825?download=1"
+fetch_file SILVA_DB/taxo.k2d   "https://figshare.com/ndownloader/files/40054828?download=1"
+
+# Final sanity checks
+for f in SILVA_DB/hash.k2d SILVA_DB/opts.k2d SILVA_DB/taxo.k2d; do
+  [ -s "$f" ] || { echo "Empty file after retries: $f"; exit 1; }
+  file "$f" | grep -qi html && { echo "Bad download (HTML): $f"; exit 1; }
+done
 
 kraken2-inspect --db SILVA_DB | head -n 3 >/dev/null
 
+# Install CRAN packages into the active R
 R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
+
+# Smoke test
 R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
