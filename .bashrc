@@ -121,3 +121,5 @@ export TZ="EET"
 
 # formatting prompt
 export PS1="\[$(tput setaf 3)\][\$PWD]\[$(tput sgr0)\]$ "
+
+cd ~
