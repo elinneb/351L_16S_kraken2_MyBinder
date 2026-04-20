@@ -1,0 +1,8 @@
+#!/bin/bash
+
+git clone https://github.com/KoslickiLab/funprofiler.git
+mkdir fastq_inputs
+mkdir funprofiler_output
+mkdir funprofiler/DB
+cd funprofiler/DB 
+wget https://zenodo.org/records/10045253/files/KOs_sbt_scaled_1000_k_11.sbt.zip
