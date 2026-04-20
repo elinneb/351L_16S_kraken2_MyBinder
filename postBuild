@@ -96,9 +96,3 @@ for f in SILVA_DB/hash.k2d SILVA_DB/opts.k2d SILVA_DB/taxo.k2d; do
 done
 
 kraken2-inspect --db SILVA_DB | head -n 3 >/dev/null
-
-# Install CRAN packages into the active R
-R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
-
-# Smoke test
-R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
