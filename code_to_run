@@ -88,8 +88,10 @@ for i in "${samps[@]}"; do
     kraken2 --paired --db SILVA_DB \
         --report kraken_outputs/"$i"_kraken2_report.txt \
         fastq_files/trimmed_paired/"$i"_R1_paired.fastq.gz \
-        fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz
+        fastq_files/trimmed_paired/"$i"_R2_paired.fastq.gz \
+        > /dev/null
 done
+
 
 
 ###############################################
@@ -99,6 +101,8 @@ done
 ## Merge Kraken2 output files into a single "biom" table
 
 kraken-biom kraken_outputs/*_kraken2_report.txt -o merged_16S_kraken_ALL.biom
+
+## RIGHT CLICK AND SAVE THIS OUTPUT in case the MyBinder stalls/resets in next steps, so you can import this directly into R later if needed
 
 ## Now open RStudio from Launcher tab and continue with R_code_to_run.R in there!
 
