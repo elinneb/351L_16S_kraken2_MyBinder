@@ -2,7 +2,6 @@ FROM rocker/binder:4.4.2
 
 USER root
 
-# system packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     tzdata \
@@ -12,32 +11,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fastqc \
     trimmomatic \
     multiqc \
+    kraken2 \
+    python3 \
+    python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# conda packages already available in rocker/binder via mamba
-RUN mamba install -y -c conda-forge -c bioconda \
-    kraken2 \
-    kraken-biom \
+# Python packages
+RUN pip3 install --no-cache-dir \
     numpy \
     pandas \
     biom-format \
-    bioconductor-phyloseq \
-    bioconductor-biomformat \
-    bioconductor-rhdf5 \
-    r-cowplot \
-    r-rcolorbrewer \
-    r-ggplot2 \
-    && mamba clean -afy
+    kraken-biom
 
-# R packages not conveniently available above
-RUN install2.r --error \
+# R packages
+RUN install2.r --error --skipinstalled \
+    cowplot \
+    RColorBrewer \
+    ggplot2 \
     remotes
 
-RUN R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco'))"
-RUN R -e "remotes::install_github('ChiLiubio/file2meco')"
+RUN R -q -e "install.packages('microeco', repos='https://cloud.r-project.org')"
+RUN R -q -e "install.packages(c('BiocManager','phyloseq','biomformat','rhdf5'), repos='https://cloud.r-project.org'); BiocManager::install(c('phyloseq','biomformat','rhdf5'), ask=FALSE, update=FALSE)"
+RUN R -q -e "remotes::install_github('ChiLiubio/file2meco')"
 
-# copy repo contents into RStudio user's home
 COPY . /home/rstudio
 RUN chown -R rstudio:rstudio /home/rstudio
 
