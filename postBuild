@@ -14,10 +14,11 @@ curl -fL --retry 5 -A "$UA" -o SILVA_DB/database100mers.kmer_distrib "https://fi
 curl -fL --retry 5 -A "$UA" -o SILVA_DB/database150mers.kmer_distrib "https://figshare.com/ndownloader/files/40054810?download=1"
 curl -fL --retry 5 -A "$UA" -o SILVA_DB/database200mers.kmer_distrib "https://figshare.com/ndownloader/files/40054813?download=1"
 curl -fL --retry 5 -A "$UA" -o SILVA_DB/database250mers.kmer_distrib "https://figshare.com/ndownloader/files/40054816?download=1"
-curl -fL --retry 5 -A "$UA" -o SILVA_DB/hash.k2d                  "https://figshare.com/ndownloader/files/40054819?download=1"
-curl -fL --retry 5 -A "$UA" -o SILVA_DB/opts.k2d                  "https://figshare.com/ndownloader/files/40054822?download=1"
-curl -fL --retry 5 -A "$UA" -o SILVA_DB/README.md                 "https://figshare.com/ndownloader/files/40054825?download=1"
-curl -fL --retry 5 -A "$UA" -o SILVA_DB/taxo.k2d                  "https://figshare.com/ndownloader/files/40054828?download=1"
+curl -fL --retry 5 -A "$UA" -o SILVA_DB/hash.k2d "https://figshare.com/ndownloader/files/40054819?download=1"
+curl -fL --retry 5 -A "$UA" -o SILVA_DB/opts.k2d "https://figshare.com/ndownloader/files/40054822?download=1"
+curl -fL --retry 5 -A "$UA" -o SILVA_DB/README.md "https://figshare.com/ndownloader/files/40054825?download=1"
+curl -fL --retry 5 -A "$UA" -o SILVA_DB/taxo.k2d "https://figshare.com/ndownloader/files/40054828?download=1"
 
 test -f SILVA_DB/hash.k2d
 test -f SILVA_DB/taxo.k2d
+ls -lh SILVA_DB
