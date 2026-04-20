@@ -1,0 +1,36 @@
+#!/bin/bash
+set -eux  # fail fast and echo commands
+
+mkdir -p kraken_outputs/
+mkdir -p SILVA_DB/
+
+UA="Mozilla/5.0"
+
+# k-mer distrib files (keep as-is, just harden)
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database50mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054801?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database75mers.kmer_distrib  "https://figshare.com/ndownloader/files/40054804?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database100mers.kmer_distrib "https://figshare.com/ndownloader/files/40054807?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database150mers.kmer_distrib "https://figshare.com/ndownloader/files/40054810?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database200mers.kmer_distrib "https://figshare.com/ndownloader/files/40054813?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/database250mers.kmer_distrib "https://figshare.com/ndownloader/files/40054816?download=1"
+
+# Kraken2 DB core files (hardened)
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/hash.k2d "https://figshare.com/ndownloader/files/40054819?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/opts.k2d "https://figshare.com/ndownloader/files/40054822?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/README.md "https://figshare.com/ndownloader/files/40054825?download=1"
+curl -A "$UA" -fL --retry 5 -o SILVA_DB/taxo.k2d "https://figshare.com/ndownloader/files/40054828?download=1"
+
+# Validate we didn't save HTML or empty files
+for f in SILVA_DB/hash.k2d SILVA_DB/opts.k2d SILVA_DB/taxo.k2d; do
+  file "$f" | grep -qi 'html' && { echo "Bad download (HTML): $f"; exit 1; }
+  [ -s "$f" ] || { echo "Empty file: $f"; exit 1; }
+done
+
+# Optional: quick DB sanity check (non-fatal if you prefer)
+kraken2-inspect --db SILVA_DB | head -n 3 >/dev/null
+
+# Install CRAN packages into the conda R
+R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
+
+# Smoke test: fail build if R pkgs missing
+R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
