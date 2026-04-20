@@ -28,9 +28,3 @@ done
 
 # Optional: quick DB sanity check (non-fatal if you prefer)
 kraken2-inspect --db SILVA_DB | head -n 3 >/dev/null
-
-# Install CRAN packages into the conda R
-R -e "options(repos='https://cloud.r-project.org'); install.packages(c('microeco','file2meco'))"
-
-# Smoke test: fail build if R pkgs missing
-R -q -e "stopifnot(requireNamespace('microeco', quietly=TRUE)); stopifnot(requireNamespace('file2meco', quietly=TRUE))"
