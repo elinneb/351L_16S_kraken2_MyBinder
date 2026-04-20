@@ -46,7 +46,7 @@ samps=($(ls *_R1.fastq.gz 2>/dev/null | sed -E 's/_R1\.fastq\.gz$//'))
 # Highlight ALL SIX of the below lines at once (from "for" through "done"), copy, and paste into terminal
 
 for i in "${samps[@]}"; do 
-    trimmomatic PE "$i"_R1.fastq.gz "$i"_R2.fastq.gz \
+    TrimmomaticPE "$i"_R1.fastq.gz "$i"_R2.fastq.gz \
         trimmed_paired/"$i"_R1_paired.fastq.gz "$i"_R1_unpaired.fastq.gz \
         trimmed_paired/"$i"_R2_paired.fastq.gz "$i"_R2_unpaired.fastq.gz \
         ILLUMINACLIP:AdapterSeqs-PE.fa:2:30:10 SLIDINGWINDOW:4:15 MINLEN:36 HEADCROP:19
