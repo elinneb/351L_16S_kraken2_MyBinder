@@ -1,0 +1,75 @@
+Sample	Month	Site
+DAC-24-07	07 (Jul)	De Anza Cove
+DAC-24-08	08 (Aug)	De Anza Cove
+DAC-24-09	09 (Sep)	De Anza Cove
+DAC-24-10	10 (Oct)	De Anza Cove
+DAC-24-11	11 (Nov)	De Anza Cove
+DAC-24-12	12 (Dec)	De Anza Cove
+DAC-25-01	01 (Jan)	De Anza Cove
+DAC-25-02	02 (Feb)	De Anza Cove
+FSB-24-07	07 (Jul)	Fiesta Sunset Beach
+FSB-24-08	08 (Aug)	Fiesta Sunset Beach
+FSB-24-09	09 (Sep)	Fiesta Sunset Beach
+FSB-24-11	11 (Nov)	Fiesta Sunset Beach
+FSB-24-12	12 (Dec)	Fiesta Sunset Beach
+FSB-25-01	01 (Jan)	Fiesta Sunset Beach
+FSB-25-02	02 (Feb)	Fiesta Sunset Beach
+FSP-24-07	07 (Jul)	Fanuel Street Park
+FSP-24-08	08 (Aug)	Fanuel Street Park
+FSP-24-09	09 (Sep)	Fanuel Street Park
+FSP-24-10	10 (Oct)	Fanuel Street Park
+FSP-24-11	11 (Nov)	Fanuel Street Park
+FSP-24-12	12 (Dec)	Fanuel Street Park
+FSP-25-01	01 (Jan)	Fanuel Street Park
+FSP-25-02	02 (Feb)	Fanuel Street Park
+KFM-24-07	07 (Jul)	Kendall Frost Marsh
+KFM-24-08	08 (Aug)	Kendall Frost Marsh
+KFM-24-09	09 (Sep)	Kendall Frost Marsh
+KFM-24-10	10 (Oct)	Kendall Frost Marsh
+KFM-24-12	12 (Dec)	Kendall Frost Marsh
+KFM-25-01	01 (Jan)	Kendall Frost Marsh
+KFM-25-02	02 (Feb)	Kendall Frost Marsh
+LLN-24-07	07 (Jul)	Leisure Lagoon
+LLN-24-08	08 (Aug)	Leisure Lagoon
+LLN-24-09	09 (Sep)	Leisure Lagoon
+LLN-24-10	10 (Oct)	Leisure Lagoon
+LLN-24-11	11 (Nov)	Leisure Lagoon
+LLN-24-12	12 (Dec)	Leisure Lagoon
+LLN-25-01	01 (Jan)	Leisure Lagoon
+LLN-25-02	02 (Feb)	Leisure Lagoon
+MPT-24-07	07 (Jul)	Mission Point
+MPT-24-08	08 (Aug)	Mission Point
+MPT-24-09	09 (Sep)	Mission Point
+MPT-24-11	11 (Nov)	Mission Point
+MPT-24-12	12 (Dec)	Mission Point
+MPT-25-01	01 (Jan)	Mission Point
+MPT-25-02	02 (Feb)	Mission Point
+PPT-24-07	07 (Jul)	Paradise Point
+PPT-24-08	08 (Aug)	Paradise Point
+PPT-24-09	09 (Sep)	Paradise Point
+PPT-24-10	10 (Oct)	Paradise Point
+PPT-24-11	11 (Nov)	Paradise Point
+PPT-24-12	12 (Dec)	Paradise Point
+PPT-25-01	01 (Jan)	Paradise Point
+PPT-25-02	02 (Feb)	Paradise Point
+RCR-24-08	08 (Aug)	Rose Creek
+RCR-24-09	09 (Sep)	Rose Creek
+RCR-24-10	10 (Oct)	Rose Creek
+RCR-24-11	11 (Nov)	Rose Creek
+RCR-24-12	12 (Dec)	Rose Creek
+RCR-25-01	01 (Jan)	Rose Creek
+RCR-25-02	02 (Feb)	Rose Creek
+SSH-24-07	07 (Jul)	South Shores
+SSH-24-08	08 (Aug)	South Shores
+SSH-24-10	10 (Oct)	South Shores
+SSH-24-11	11 (Nov)	South Shores
+SSH-25-01	01 (Jan)	South Shores
+SSH-25-02	02 (Feb)	South Shores
+TCR-24-07	07 (Jul)	Tecolote Creek
+TCR-24-08	08 (Aug)	Tecolote Creek
+TCR-24-09	09 (Sep)	Tecolote Creek
+TCR-24-10	10 (Oct)	Tecolote Creek
+TCR-24-11	11 (Nov)	Tecolote Creek
+TCR-24-12	12 (Dec)	Tecolote Creek
+TCR-25-01	01 (Jan)	Tecolote Creek
+TCR-25-02	02 (Feb)	Tecolote Creek
