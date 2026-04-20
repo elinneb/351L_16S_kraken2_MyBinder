@@ -2,6 +2,8 @@ FROM rocker/binder:4.4.2
 
 USER root
 
+SHELL ["/bin/bash", "-c"]
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nano \
     tzdata \
@@ -17,6 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     file \
     jq \
+    bash \
+    bash-completion \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -66,6 +70,12 @@ jq -r '.files[] | [.name, .download_url] | @tsv' "$TMP_JSON" | while IFS=$'\t' r
   curl -fL --retry 5 --retry-delay 2 -o "$out" "$url" || true
 done
 
+if [ -s /home/rstudio/SILVA_DB/hash.k2d ] && \
+   [ -s /home/rstudio/SILVA_DB/opts.k2d ] && \
+   [ -s /home/rstudio/SILVA_DB/taxo.k2d ]; then
+  kraken2-inspect --db /home/rstudio/SILVA_DB | head -n 3 >/dev/null || true
+fi
+
 echo "SILVA_DB contents:"
 ls -lh /home/rstudio/SILVA_DB || true
 EOF
@@ -76,6 +86,25 @@ RUN cat > /usr/local/bin/binder-entrypoint.sh <<'EOF'
 #!/bin/bash
 set -e
 
+export SHELL=/bin/bash
+export TERM=xterm-256color
+export HOME=/home/rstudio
+
+if [ ! -f "$HOME/.bashrc" ]; then
+  cat > "$HOME/.bashrc" <<'EOBRC'
+export SHELL=/bin/bash
+export TERM=xterm-256color
+export HISTFILE=~/.bash_history
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+export PROMPT_COMMAND='history -a'
+[ -f /etc/bash_completion ] && . /etc/bash_completion
+EOBRC
+fi
+
+touch "$HOME/.bash_history"
+chmod 600 "$HOME/.bash_history" || true
+
 /usr/local/bin/fetch_silva_db.sh || true
 
 exec "$@"
@@ -83,6 +112,7 @@ EOF
 
 RUN chmod +x /usr/local/bin/binder-entrypoint.sh
 RUN chown -R rstudio:rstudio /home/rstudio
+RUN chsh -s /bin/bash rstudio
 
 USER rstudio
 WORKDIR /home/rstudio
