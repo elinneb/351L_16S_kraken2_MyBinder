@@ -1,17 +1,8 @@
 ###############################################
-########## Add sequencing data to input files folder
+########## Check sequencing data folder
 ###############################################
 
-# Drag and drop (or upload) the zipped folder "fastq_files" downloaded from CC into the file explorer on the left
-# WAIT for the upload bar at the bottom to finish
-# Click on "Terminal" icon in the right panel. Window with "[/home/jovyan]$" in yellow should pop up.
-
-## Begin running code in the terminal (paste uncommented lines into terminal and hit enter):
-
-# Unzip the folder you added to the MyBinder and remove hidden MacOSX folders
-unzip fastq_files && rm -r __MACOSX
-
-# You should have a new folder "fastq_files", that has 1) all the sequence data, 2) a file with Illumina adapater sequences, and 3) an empty "trimmed_paired" folder in it.
+# You should have a new folder "fastq_files", that has 1) all the sequence data, 2) a file with Illumina adapater sequences, and 3) a "trimmed_paired" folder with an empty placeholder file in it.
 
 
 
