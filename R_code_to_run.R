@@ -41,6 +41,7 @@ meco_dataset <- phyloseq2meco(ps)
 # Create object that agglomerates to Order
 t <- trans_abund$new(dataset = meco_dataset, taxrank = "Order", ntaxa = 25)
 t$data_abund$Site <- factor(t$data_abund$Site, levels = c("Mission Point","Paradise Point","Fiesta Sunset Beach", "Fanuel Street Park", "Kendall Frost Marsh", "De Anza Cove", "Leisure Lagoon", "South Shores", "Tecolote Creek", "Rose Creek"))
+t$data_abund$Month <- factor(t$data_abund$Month, levels = c("07 (Jul)","08 (Aug)","09 (Sep)", "10 (Oct)", "11 (Nov)", "12 (Dec)", "01 (Jan)", "02 (Feb)"))
 
 
 g_s <- t$plot_bar(bar_full = TRUE, others_color = "grey70", facet = c("Site"), legend_text_italic = FALSE, clustering = FALSE, x_axis_name = NULL, color_values = RColorBrewer::brewer.pal(10, "Paired")) + theme_classic() + theme(text = element_text(size = 18), axis.text = element_text(size = 14), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + guides(fill = guide_legend(ncol = 1, title = "Order"))
